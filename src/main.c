@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h> /* exit() */
 #include <sys/types.h> /* define pid_t */
-#include <sys/wait.h>
-#include <sys/mman.h>
+#include <sys/wait.h> /* wait process*/
+#include <sys/mman.h> /* memory map*/
 #include <unistd.h> /* fork() */
 
 #define N_PROCESSOS 4
