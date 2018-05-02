@@ -12,14 +12,14 @@
 #include <sys/mman.h> /* memory map*/
 #include <unistd.h> /* fork() */
 
-#define N_PROCESSOS 16
+#define N_PROCESSOS 4
 #define N_MAX 64
 
 int is_prime(unsigned long int );
 
 int main() {
   pid_t pid[N_PROCESSOS];
-  unsigned long int prime_number[N_MAX];
+  unsigned long int numbers[N_MAX];
   char c;
   int j;
 
@@ -34,7 +34,7 @@ int main() {
   /* Ler no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
   j = 0;
   do{
-    scanf("%li", &prime_number[j]);
+    scanf("%li", &numbers[j]);
     c = getchar();
     j += 1;
   }while (c != '\n' && j < N_MAX);
@@ -46,8 +46,7 @@ int main() {
     if (pid[i] == 0){
       
       for(int k = 0; i+k < j; k += N_PROCESSOS){
-        printf("Executando processo %2d para o numero %20li\n", i, prime_number[i+k]);
-        *prime_numbers_amount += is_prime(prime_number[i+k]);
+        *prime_numbers_amount += is_prime(numbers[i+k]);
       }
       
       exit(EXIT_SUCCESS);
