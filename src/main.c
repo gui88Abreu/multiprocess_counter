@@ -13,12 +13,13 @@
 #include <unistd.h> /* fork() */
 
 #define N_PROCESSOS 4
+#define N_MAX 64
 
 int eh_primo(unsigned long int );
 
 int main() {
   pid_t pid[N_PROCESSOS];
-  unsigned long int x[64];
+  unsigned long int x[N_MAX];
   char c;
   int j;
 
@@ -30,13 +31,15 @@ int main() {
   int *num_primos;
   num_primos = (int*) mmap(NULL, sizeof(int), protection, visibility, 0, 0);
 
+  /* Ler no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
   j = 0;
   do{
     scanf("%li", &x[j]);
     c = getchar();
     j += 1;
-  }while (c != '\n' && j < 64);
+  }while (c != '\n' && j < N_MAX);
 
+  /* Contar quantos numeros primos estao armazenados no vetor x de entradas em N_PROCESSOS processos paralelos*/
   *num_primos = 0;
   for(int i = 0; i < N_PROCESSOS; i++){
     pid[i] = fork();
@@ -44,10 +47,11 @@ int main() {
       for(int k = 0; i+k < j; k += 4){
         *num_primos += eh_primo(x[i+k]);
       }
-      exit(0);
+      exit(EXIT_SUCCESS);
     }
   }
   
+  /* Esperar pelo fim dos N_PROCESSOS processos iniciados*/
   for(int i = 0; i < N_PROCESSOS; i++){
     waitpid(pid[i], NULL, 0);
   }
