@@ -12,14 +12,14 @@
 #include <sys/mman.h> /* memory map*/
 #include <unistd.h> /* fork() */
 
-#define N_PROCESSOS 4
+#define N_PROCESSOS 16
 #define N_MAX 64
 
-int eh_primo(unsigned long int );
+int is_prime(unsigned long int );
 
 int main() {
   pid_t pid[N_PROCESSOS];
-  unsigned long int x[N_MAX];
+  unsigned long int prime_number[N_MAX];
   char c;
   int j;
 
@@ -28,25 +28,28 @@ int main() {
   int visibility = MAP_SHARED | MAP_ANON;
 
   /* Criar area de memoria compartilhada */
-  int *num_primos;
-  num_primos = (int*) mmap(NULL, sizeof(int), protection, visibility, 0, 0);
+  int *prime_numbers_amount;
+  prime_numbers_amount = (int*) mmap(NULL, sizeof(int), protection, visibility, 0, 0);
 
   /* Ler no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
   j = 0;
   do{
-    scanf("%li", &x[j]);
+    scanf("%li", &prime_number[j]);
     c = getchar();
     j += 1;
   }while (c != '\n' && j < N_MAX);
 
-  /* Contar quantos numeros primos estao armazenados no vetor x de entradas em N_PROCESSOS processos paralelos*/
-  *num_primos = 0;
+  /* Contar quantos numeros primos estao armazenados no vetor prime_number de entradas em N_PROCESSOS processos paralelos*/
+  *prime_numbers_amount = 0;
   for(int i = 0; i < N_PROCESSOS; i++){
     pid[i] = fork();
     if (pid[i] == 0){
-      for(int k = 0; i+k < j; k += 4){
-        *num_primos += eh_primo(x[i+k]);
+      
+      for(int k = 0; i+k < j; k += N_PROCESSOS){
+        printf("Executando processo %2d para o numero %20li\n", i, prime_number[i+k]);
+        *prime_numbers_amount += is_prime(prime_number[i+k]);
       }
+      
       exit(EXIT_SUCCESS);
     }
   }
@@ -56,18 +59,20 @@ int main() {
     waitpid(pid[i], NULL, 0);
   }
 
-  printf("%d\n", *num_primos);
+  printf("%d\n", *prime_numbers_amount);
   return 0;
 }
 
-int eh_primo(unsigned long int x){
+/* Determinar se o numero dado eh primo*/
+/* return 1 caso seja e 0 caso contrario*/
+int is_prime(unsigned long int prime_number){
   int response = 1;
   int i = 2;
 
-  if (x < 2) response = 0;
+  if (prime_number < 2) response = 0;
   
-  while(i <= x/2 && response == 1){
-    if (x%i == 0)
+  while(i <= prime_number/2 && response == 1){
+    if (prime_number%i == 0)
       response = 0;
     i++;
   }
