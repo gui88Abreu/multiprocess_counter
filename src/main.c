@@ -64,17 +64,17 @@ int main() {
 
 /* Determinar se o numero dado eh primo*/
 /* return 1 caso seja e 0 caso contrario*/
-int is_prime(unsigned long int prime_number){
-  int response = 1;
-  int i = 2;
+int is_prime(unsigned long int number){
+  char response = 1;
+  unsigned long int i = 2;
 
-  if (prime_number < 2) response = 0;
+  if (number < 2) response = 0;
   
-  while(i <= prime_number/2 && response == 1){
-    if (prime_number%i == 0)
+  while(i <= number/2 && response == 1){
+    if (number%i == 0)
       response = 0;
     i++;
   }
   
-  return response;
+  return (int)response;
 }
