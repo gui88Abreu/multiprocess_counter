@@ -28,8 +28,9 @@ int main() {
   int visibility = MAP_SHARED | MAP_ANON;
 
   /* Criar area de memoria compartilhada */
-  int *prime_numbers_amount;
-  prime_numbers_amount = (int*) mmap(NULL, sizeof(int), protection, visibility, 0, 0);
+  int *prime_numbers_amount, *result;
+  prime_numbers_amount = (int*) mmap(NULL, 4*sizeof(int), protection, visibility, 0, 0);
+  result = (int*) mmap(NULL, 4*sizeof(int), protection, visibility, 0, 0);
 
   /* Ler no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
   j = 0;
@@ -40,25 +41,26 @@ int main() {
   }while (c != '\n' && j < N_MAX);
 
   /* Contar quantos numeros primos estao armazenados no vetor prime_number de entradas em N_PROCESSOS processos paralelos*/
-  *prime_numbers_amount = 0;
   for(int i = 0; i < N_PROCESSOS; i++){
     pid[i] = fork();
     if (pid[i] == 0){
-      
+      prime_numbers_amount[i] = 0;
       for(int k = 0; i+k < j; k += N_PROCESSOS){
-        *prime_numbers_amount += is_prime(numbers[i+k]);
+        prime_numbers_amount[i] += is_prime(numbers[i+k]);
       }
       
       exit(EXIT_SUCCESS);
     }
   }
   
+  *result = 0;
   /* Esperar pelo fim dos N_PROCESSOS processos iniciados*/
   for(int i = 0; i < N_PROCESSOS; i++){
     waitpid(pid[i], NULL, 0);
+    *result += prime_numbers_amount[i];
   }
 
-  printf("%d\n", *prime_numbers_amount);
+  printf("%d\n", *result);
   return 0;
 }
 
