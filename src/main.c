@@ -1,8 +1,6 @@
-/* Contador de palavras
- *
- * Este programa recebera uma serie de caracteres representando palavras em sua
- * entrada. Ao receber um caractere fim de linha ('\n'), deve imprimir na tela o
- * numero de palavras separadas que recebeu e, apos, encerrar.
+/*
+ * Esta tarefa consiste em receber um texto na entrada e contar quantos números primos existem nela
+ * utilizando multiprocessos.
  */
 
 #include <stdio.h>
