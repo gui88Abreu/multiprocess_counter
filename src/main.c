@@ -18,21 +18,21 @@
 int is_prime(unsigned long int );
 
 int main() {
-  pid_t pid[N_PROCESSOS];
-  unsigned long int numbers[N_MAX];
-  char c;
-  int j;
+  pid_t pid[N_PROCESSOS]; /* vetor de threads*/
+  unsigned long int numbers[N_MAX]; /* armazena numeros a serem analisados*/
+  char c; /*auxilia na leitura*/
+  int j; /* armazena a contagem de numeros lidos*/
 
-  /* Definir flags de protecao e visibilidade de memoria */
+  /* Defini flags de protecao e visibilidade de memoria */
   int protection = PROT_READ | PROT_WRITE;
   int visibility = MAP_SHARED | MAP_ANON;
 
-  /* Criar area de memoria compartilhada */
+  /* Cria area de memoria compartilhada */
   int *prime_numbers_amount, *result;
   prime_numbers_amount = (int*) mmap(NULL, 4*sizeof(int), protection, visibility, 0, 0);
   result = (int*) mmap(NULL, 4*sizeof(int), protection, visibility, 0, 0);
 
-  /* Ler no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
+  /* Le no maximo N_MAX numeros inteiros sem sinal seguidos de um \n*/
   j = 0;
   do{
     scanf("%li", &numbers[j]);
@@ -40,7 +40,7 @@ int main() {
     j += 1;
   }while (c != '\n' && j < N_MAX);
 
-  /* Contar quantos numeros primos estao armazenados no vetor prime_number de entradas em N_PROCESSOS processos paralelos*/
+  /* Conta quantos numeros primos estao armazenados no vetor numbers de entradas em N_PROCESSOS processos paralelos*/
   for(int i = 0; i < N_PROCESSOS; i++){
     pid[i] = fork();
     if (pid[i] == 0){
@@ -54,7 +54,7 @@ int main() {
   }
   
   *result = 0;
-  /* Esperar pelo fim dos N_PROCESSOS processos iniciados*/
+  /* Espera pelo fim dos N_PROCESSOS processos iniciados*/
   for(int i = 0; i < N_PROCESSOS; i++){
     waitpid(pid[i], NULL, 0);
     *result += prime_numbers_amount[i];
@@ -64,7 +64,7 @@ int main() {
   return 0;
 }
 
-/* Determinar se o numero dado eh primo*/
+/* Determina se o numero dado eh primo*/
 /* return 1 caso seja e 0 caso contrario*/
 int is_prime(unsigned long int number){
   char response = 1;
