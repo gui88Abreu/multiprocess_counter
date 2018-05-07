@@ -53,10 +53,12 @@ int main() {
   
   *result = 0;
   /* Espera pelo fim dos N_PROCESSOS processos iniciados*/
-  for(int i = 0; i < N_PROCESSOS; i++){
+  for(int i = 0; i < N_PROCESSOS; i++)
     waitpid(pid[i], NULL, 0);
+
+  /* Obtem resultado atraves da quantidade de primos achados nos processos executados*/
+  for(int i = 0; i < N_PROCESSOS; i++)
     *result += prime_numbers_amount[i];
-  }
 
   printf("%d\n", *result);
   return 0;
